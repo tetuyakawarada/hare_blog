@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 
@@ -15,8 +16,8 @@ use App\Http\Controllers\PostController;
 |
 */
 
-Route::get('/', [Postcontroller::class,'index']) 
-->name('root');
+Route::get('/', [Postcontroller::class, 'index'])
+    ->name('root');
 
 
 Route::get('/dashboard', function () {
@@ -29,5 +30,9 @@ Route::resource('posts', PostController::class)
 
 Route::resource('posts', Postcontroller::class)
     ->only(['index', 'show']);
+
+Route::resource('posts.comments', CommentController::class)
+    ->only(['create', 'store', 'edit', 'update', 'destroy'])
+    ->middleware('auth');
 
 require __DIR__ . '/auth.php';
