@@ -41,5 +41,16 @@
             </div>
         @endauth
 
+        <section class="font-sans break-normal text-gray-900 ">
+            @foreach ($comments as $comment)
+                <div class="my-2">
+                    <span class="font-bold mr-3">{{ $comment->user->name }}</span>
+                    <span class="text-sm">{{ $comment->created_at }}</span>
+                    <p>{!! nl2br(e($comment->body)) !!}</p>
+                </div>
+                <hr>
+            @endforeach
+        </section>
+
     </div>
 </x-app-layout>
