@@ -61,7 +61,7 @@
                             </form>
                         @endcan
                     </div>
-                    <hr>
+                    <hr class="my-2">
             @endforeach
         </section>
 
