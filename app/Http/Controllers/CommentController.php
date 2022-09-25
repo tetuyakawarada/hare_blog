@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CommentRequest;
 use App\Models\Comment;
 use App\Models\Post;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
@@ -103,18 +104,15 @@ class CommentController extends Controller
 
         $comment->fill($request->all());
 
-        // トランザクション開始
+        //トランザクションの開始
         // DB::beginTransaction();
         try {
-            // 更新
+            // 登録
             $comment->save();
-
-            // トランザクション終了(成功)
             // DB::commit();
-        } catch (\Exception $e) {
-            // トランザクション終了(失敗)
-            // DB::rollback();
-            return back()->withInput()->withErrors($e->getMessage());
+        } catch (\Throwable $th) {
+            // DB::rollBack();
+            return back()->withInput()->withErrors($th->getMessage());
         }
 
         return redirect()->route('posts.show', $post)
@@ -124,11 +122,29 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param  \App\Models\Post  $post
      * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Comment $comment)
+    public function destroy(Request $request, Post $post, Comment $comment)
     {
-        //
+        if ($request->user()->cannot('delete', $comment)) {
+            return redirect()->route('posts.show', $post)
+                ->withErrors('自分のコメント以外は削除できません');
+        }
+
+        //トランザクションの開始
+        // DB::beginTransaction();
+        try {
+            // 登録
+            $comment->delete();
+            // DB::commit();
+        } catch (\Throwable $th) {
+            // DB::rollBack();
+            return back()->withInput()->withErrors($th->getMessage());
+        }
+
+        return redirect()->route('posts.show', $post)
+            ->with('notice', 'コメントを削除しました');
     }
 }
